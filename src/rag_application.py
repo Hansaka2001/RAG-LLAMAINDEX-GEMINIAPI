@@ -1,13 +1,16 @@
 import os
 import logging
 from dotenv import load_dotenv
-from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index import (
+    VectorStoreIndex,
+    SimpleDirectoryReader,
+    ServiceContext,
+    StorageContext,
+    load_index_from_storage,
+)
 from llama_index.llms import LangChainLLM
 from langchain.llms import GooglePalm
 from llama_index.node_parser import SimpleNodeParser
-from llama_index.storage.storage_context import StorageContext
-from llama_index.vector_stores import SimpleVectorStore
-import pickle
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -22,11 +25,11 @@ llm = LangChainLLM(llm=GooglePalm(temperature=0.1))
 # Create a ServiceContext with the LLM
 service_context = ServiceContext.from_defaults(llm=llm)
 
-def create_or_load_index(pdf_directory, index_file="index.pickle"):
-    if os.path.exists(index_file):
-        logging.info(f"Loading existing index from {index_file}")
-        with open(index_file, "rb") as f:
-            return pickle.load(f)
+def create_or_load_index(pdf_directory, persist_dir="./storage"):
+    if os.path.exists(persist_dir):
+        logging.info(f"Loading existing index from {persist_dir}")
+        storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
+        return load_index_from_storage(storage_context)
     
     logging.info(f"Creating new index from PDF documents in {pdf_directory}")
     try:
@@ -39,10 +42,9 @@ def create_or_load_index(pdf_directory, index_file="index.pickle"):
         
         index = VectorStoreIndex(nodes, service_context=service_context)
         
-        with open(index_file, "wb") as f:
-            pickle.dump(index, f)
+        index.storage_context.persist(persist_dir=persist_dir)
         
-        logging.info(f"Index created and saved to {index_file}")
+        logging.info(f"Index created and saved to {persist_dir}")
         return index
     except Exception as e:
         logging.error(f"Error creating index: {str(e)}")
