@@ -1,2 +1,1 @@
 # RAG-LLAMAINDEX-GEMINIAPI
-hansaka 
