@@ -1,5 +1,5 @@
 from config import PDF_DIRECTORY, LLM_TEMPERATURE, CHUNK_SIZE, CHUNK_OVERLAP
-from llama_index.node_parser import SimpleNodeParser
+from llama_index.core.node_parser import SimpleFileNodeParser
 from langchain.llms import GooglePalm
 from llama_index.llms import LangChainLLM
 from llama_index import (
@@ -12,10 +12,8 @@ from llama_index import (
 from dotenv import load_dotenv
 import logging
 import os
+from sentence_transformers import SentenceTransformer
 from llama_index.embeddings import HuggingFaceEmbedding
-import nltk
-nltk.download('punkt')
-
 
 # Set up logging
 logging.basicConfig(level=logging.INFO,
@@ -30,10 +28,12 @@ llm = LangChainLLM(llm=GooglePalm(temperature=LLM_TEMPERATURE))
 
 # Create a ServiceContext with the LLM
 llm = GooglePalm(api_key=os.getenv("GOOGLE_API_KEY"))
-embed_model = HuggingFaceEmbedding(
-    model_name="sentence-transformers/all-MiniLM-L6-v2")
+embed_model = SentenceTransformer('all-MiniLM-L6-v2')
 service_context = ServiceContext.from_defaults(
-    llm=llm, embed_model=embed_model)
+    llm=llm, embed_model=HuggingFaceEmbedding(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+)
 
 
 def create_or_load_index(pdf_directory=PDF_DIRECTORY, persist_dir="./storage"):

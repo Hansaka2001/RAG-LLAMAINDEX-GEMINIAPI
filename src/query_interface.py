@@ -1,5 +1,5 @@
 import logging
-from rag_application import create_or_load_index, query_index
+from src.rag_application import create_or_load_index, query_index
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
