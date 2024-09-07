@@ -1,6 +1,15 @@
-llama-index==0.8.11
-langchain==0.0.267
-google-generativeai==0.3.1
-python-dotenv==1.0.0
-pypdf==3.15.4
-sentence-transformers==2.2.2
+# llama-index==0.8.11
+# langchain==0.0.267
+# google-generativeai==0.3.1
+# python-dotenv==1.0.0
+# pypdf==3.15.4
+# sentence-transformers==2.2.2
+
+streamlit
+google-generativeai
+python-dotenv
+langchain
+pyPDF2
+faiss-cpu
+langchain_google_genai
+langchain-community
