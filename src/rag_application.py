@@ -11,6 +11,7 @@ from llama_index import (
 from llama_index.llms import LangChainLLM
 from langchain.llms import GooglePalm
 from llama_index.node_parser import SimpleNodeParser
+from config import PDF_DIRECTORY, LLM_TEMPERATURE, CHUNK_SIZE, CHUNK_OVERLAP
 
 # Set up logging
 logging.basicConfig(level=logging.INFO,
@@ -21,13 +22,13 @@ load_dotenv()
 
 # Set up the Gemini LLM
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
-llm = LangChainLLM(llm=GooglePalm(temperature=0.1))
+llm = LangChainLLM(llm=GooglePalm(temperature=LLM_TEMPERATURE))
 
 # Create a ServiceContext with the LLM
 service_context = ServiceContext.from_defaults(llm=llm)
 
 
-def create_or_load_index(pdf_directory, persist_dir="./storage"):
+def create_or_load_index(pdf_directory=PDF_DIRECTORY, persist_dir="./storage"):
     if os.path.exists(persist_dir):
         logging.info(f"Loading existing index from {persist_dir}")
         storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
@@ -40,7 +41,7 @@ def create_or_load_index(pdf_directory, persist_dir="./storage"):
         }).load_data()
 
         parser = SimpleNodeParser.from_defaults(
-            chunk_size=1000, chunk_overlap=200)
+            chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
         nodes = parser.get_nodes_from_documents(documents)
 
         index = VectorStoreIndex(nodes, service_context=service_context)
@@ -65,8 +66,7 @@ def query_index(index, query):
 
 
 if __name__ == "__main__":
-    pdf_directory = "pdfs"
-    index = create_or_load_index(pdf_directory)
+    index = create_or_load_index()
 
     query = "What is the main topic of the document?"
     response = query_index(index, query)
