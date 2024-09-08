@@ -84,7 +84,7 @@ This project uses the following license: [MIT License](https://opensource.org/li
 
 ## Contact
 
-If you want to contact me, you can reach me at <your_email@example.com>.
+If you want to contact me, you can reach me at <hansakarukshan43@gmail.com>.
 
 ## Acknowledgements
 
