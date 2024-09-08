@@ -164,3 +164,5 @@ cython_debug/
 
 #environment file
 pdf_rag_env
+src 
+pdfs
